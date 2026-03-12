@@ -13,7 +13,10 @@ class CartPage(BasePage):
     # Within an item row (relative)
     ITEM_TITLE_LINK = "//a[contains(@class, 'font-weight-bold')]"
     # Price column: second col-md-2 in the row (first is item specs area)
-    ITEM_PRICE = "//div[contains(@class,'col-md-2')][1]"
+    ITEM_PRICE = (
+        "//div[contains(@class,'col-md-2') ",
+        "and contains(@class,'py-2') and contains(normalize-space(.), '₽')]",
+    )
 
     # Total block at the bottom of the cart
     CART_TOTAL = "//h2[contains(text(), 'Итого')]"
@@ -25,9 +28,9 @@ class CartPage(BasePage):
 
     # --- PUBLIC API ---
 
-    def open(self, url_path=""):
+    def open_cart(self):
         with allure.step("Open cart page"):
-            self.open(self.URL)
+            super().open(self.URL)
 
     @allure.step("Wait for cart to load")
     def wait_for_cart(self):

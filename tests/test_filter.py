@@ -22,9 +22,6 @@ def test_filter_by_price(catalog, min_p, max_p):
     with allure.step("Open the sofas catalog"):
         catalog.open_catalog()
 
-    with allure.step("Open the price filter"):
-        catalog.open_price_filter()
-
     with allure.step(f"Apply price filter {min_p}–{max_p} ₽"):
         catalog.filter_by_price_range(min_p, max_p)
 

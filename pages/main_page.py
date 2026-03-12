@@ -44,7 +44,7 @@ class MainPage(BasePage):
 
     def open_main(self):
         with allure.step("Open main page"):
-            self.open(self.URL)
+            super().open(self.URL)
 
     @allure.step("Search for: {text}")
     def search_for_product(self, text: str):

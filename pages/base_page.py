@@ -25,9 +25,9 @@ class BasePage:
         """Return a Locator for the given XPath / CSS Selector."""
         return self.page.locator(locator)
 
-    def find_first(self, locator: str) -> Locator:
-        """Return the first matching element."""
-        return self.page.locator(locator).first
+    # def find_first(self, locator: str) -> Locator:
+    #     """Return the first matching element."""
+    #     return self.page.locator(locator).first
 
     # Actions
 

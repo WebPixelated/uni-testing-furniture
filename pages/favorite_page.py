@@ -22,7 +22,7 @@ class FavoritePage(BasePage):
     # --- PUBLIC API ---
     def open_favorites(self):
         with allure.step("Open favorites page"):
-            self.open(self.URL)
+            super().open(self.URL)
 
     @allure.step("Wait for favorites products to load")
     def wait_for_products_to_load(self, timeout: int = 10_000):

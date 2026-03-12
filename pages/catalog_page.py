@@ -15,7 +15,8 @@ class CatalogPage(BasePage):
     # The block that contains the price filter
     PRICE_FILTER_BLOCK = (
         "//div[contains(@class,'filter__item')]"
-        "[.//div[contains(@class,'filter__title')]//a[normalize-space()='Цена']]"
+        "[.//div[contains(@class,'filter__title')]"
+        "//a[normalize-space()='Цена']]"
     )
     # Clickable title inside the price filter block (opens slider)
     PRICE_FILTER_TITLE = (
@@ -49,6 +50,18 @@ class CatalogPage(BasePage):
         "and not(contains(@class, 'product-card__'))]"
     )
 
+    # Specific card by name
+    CARD_BY_NAME = (
+        "//div[contains(@class, 'product-card__name')]"
+        "//a[contains(normalize-space(text()), '{product_name}')]"
+    )
+
+    # Find product card ancestor
+    CARD_ANCESTOR = (
+        "/ancestor::div[contains(@class, 'product-card') "
+        "and not(contains(@class, 'product-card__'))]"
+    )
+
     # Relative locators (used with .locator() on a card element)
     CARD_TITLE_LINK = "//div[contains(@class, 'product-card__name')]//a"
 
@@ -66,12 +79,7 @@ class CatalogPage(BasePage):
     # --- PUBLIC API ---
     def open_catalog(self):
         with allure.step("Open sofas catalog"):
-            self.open(self.URL)
-
-    @allure.step("Open price filter")
-    def open_price_filter(self):
-        """Click on price filter to reveal the slider."""
-        self._open_price_filter()
+            super().open(self.URL)
 
     @allure.step("Apply price filter: {min_price} - {max_price}")
     def filter_by_price_range(self, min_price: int, max_price: int):
@@ -79,13 +87,13 @@ class CatalogPage(BasePage):
         Open the price filter. Move both sliders to given numbers.
         If value is unreachable, land on the nearest.
         """
-        # self._open_price_filter()
+        self._open_price_filter()
         self._move_slider_to_value(self.PRICE_SLIDER_MIN, min_price)
         self._move_slider_to_value(self.PRICE_SLIDER_MAX, max_price)
         self._apply_filter()
 
     @allure.step("Get first product info")
-    def get_first_product_info(self) -> dict[str, str, str]:
+    def get_first_product_info(self) -> dict[str, str]:
         first_card = self.find(f"({self.PRODUCT_CARD})[1]")
         name = first_card.locator(self.CARD_TITLE_LINK).inner_text().strip()
         price = first_card.locator(self.CARD_CURRENT_PRICE).inner_text().strip()
@@ -101,7 +109,8 @@ class CatalogPage(BasePage):
     @allure.step("Click on product by name: '{product_name}'")
     def click_product_by_name(self, product_name: str):
         """Finds a product on the page and clicks on it."""
-        locator = f"//div[contains(@class, 'product-card__name')]//a[contains(text(), '{product_name}')]"
+        # locator = f"//div[contains(@class, 'product-card__name')]//a[contains(text(), '{product_name}')]"
+        locator = self.CARD_BY_NAME.format(product_name=product_name)
         self.wait_for_element(locator)
         self.find(locator).click()
         self.page.wait_for_timeout(1_500)
@@ -130,10 +139,8 @@ class CatalogPage(BasePage):
         """
         Returns product_name specifications.
         """
-        locator = f"//div[contains(@class, 'product-card__name')]//a[contains(normalize-space(text()), '{product_name}')]"
-        product_card = self.find(
-            f"{locator}/ancestor::div[contains(@class, 'product-card') and not(contains(@class, 'product-card__'))]"
-        ).first
+        locator = self.CARD_BY_NAME.format(product_name=product_name)
+        product_card = self.find(f"{locator}{self.CARD_ANCESTOR}").first
 
         if not product_card.is_visible():
             return None
@@ -199,4 +206,5 @@ class CatalogPage(BasePage):
         apply_btn.wait_for(state="visible", timeout=5000)
         apply_btn.click()
 
-        self.page.locator(self.PRODUCT_CARD).first.wait_for()
+        # self.page.locator(self.PRODUCT_CARD).first.wait_for()
+        self.page.wait_for_load_state("networkidle")
