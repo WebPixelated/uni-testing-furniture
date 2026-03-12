@@ -3,7 +3,6 @@ Test 2.2 — Open a product card and verify its name and characteristics.
 """
 
 import allure
-import pytest
 from utils.helpers import parse_dimension
 
 # The name of a characteristic that should exist in the product table.

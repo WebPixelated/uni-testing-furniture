@@ -4,7 +4,6 @@ Test 2.5 — Add the first product in the catalog to the cart and verify
 """
 
 import allure
-import pytest
 from utils.helpers import parse_price
 
 

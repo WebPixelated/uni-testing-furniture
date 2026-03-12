@@ -3,7 +3,6 @@ Test 2.4 — Search for a product by name and verify it appears in results.
 """
 
 import allure
-import pytest
 
 SEARCH_QUERY = "Диван Бостон"
 
