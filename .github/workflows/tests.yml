@@ -68,23 +68,6 @@ jobs:
           -v
         continue-on-error: true
 
-      # Install Allure CLI
-      - name: Install Allure
-        if: always()
-        run: |
-          curl -o allure.tgz -L https://github.com/allure-framework/allure2/releases/latest/download/allure-2.tgz
-          tar -zxvf allure.tgz
-          sudo mv allure-*/bin/allure /usr/bin/allure
-
-      # Upload HTML report
-      - name: Upload Allure HTML report
-        uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: allure-report-${{ github.run_member }}
-          path: allure-report
-          retention-days: 7
-
       # Upload raw Allure results
       - name: Upload raw Allure results
         uses: actions/upload-artifact@v4
