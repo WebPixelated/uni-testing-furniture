@@ -73,7 +73,8 @@ class ProductPage(BasePage):
         Accept the dialogue to proceed to cart page, or dismiss it.
         """
 
-        self.page.wait_for_load_state("networkidle")
+        # self.page.wait_for_load_state("networkidle")
+        self.page.wait_for_load_state("domcontentloaded")
 
         self.wait_for_element(self.ADD_TO_CART_BTN)
 

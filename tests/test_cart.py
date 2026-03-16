@@ -13,6 +13,7 @@ from utils.helpers import parse_price
 def test_add_to_cart_and_verify_price(catalog, product, cart):
     with allure.step("Open the sofas catalog"):
         catalog.open_catalog()
+        catalog.screenshot("1. Catalog opened")
 
     with allure.step("Get first product info (name + catalog price)"):
         info = catalog.get_first_product_info()
@@ -31,6 +32,7 @@ def test_add_to_cart_and_verify_price(catalog, product, cart):
 
     with allure.step("Wait for the product page to load"):
         product.wait_for_product_page()
+        product.screenshot("2. Product page loaded")
 
     with allure.step("Read price from the product page"):
         product_page_price_str = product.get_price()
@@ -47,6 +49,7 @@ def test_add_to_cart_and_verify_price(catalog, product, cart):
 
     with allure.step("Wait for the cart page to load"):
         cart.wait_for_cart()
+        cart.screenshot("3. Cart page - product added")
 
     with allure.step(f"Verify '{catalog_product_name}' is present in cart"):
         assert cart.has_product(catalog_product_href), (
@@ -66,3 +69,22 @@ def test_add_to_cart_and_verify_price(catalog, product, cart):
             f"Cart total {total_price} ₽ does not match "
             f"product page price {product_page_price} ₽"
         )
+
+    with allure.step("[CLEANUP] Remove product from cart to restore state"):
+        _remove_all_from_cart(cart)
+        cart.screenshot("4. Cart after cleanup")
+
+
+def _remove_all_from_cart(cart):
+    """
+    Click all 'Удалить' buttons until the cart is empty.
+    Each removal shows a browser confirm-dialog that must be accepted.
+    """
+    while True:
+        remove_btns = cart.find(cart.ITEM_REMOVE_BTN)
+        if remove_btns.count() == 0:
+            break
+
+        cart.page.once("dialog", lambda d: d.accept())
+        remove_btns.first.click()
+        cart.page.wait_for_load_state("domcontentloaded")

@@ -63,3 +63,21 @@ class BasePage:
 
     def assert_text_contains(self, locator: str, text: str, timeout: int = 10_000):
         expect(self.find(locator)).to_contain_text(text, timeout=timeout)
+
+    # Screenshots
+
+    def screenshot(self, name: str):
+        """
+        Take a full-page screenshot and attach it to the current Allure report.
+
+        Usage inside a test:
+            catalog.screenshot("Catalog opened")
+
+        Always full-page so scrolled-off content is captured too.
+        """
+        logger.debug(f"Screenshot: {name}")
+        allure.attach(
+            self.page.screenshot(full_page=True),
+            name=name,
+            attachment_type=allure.attachment_type.PNG,
+        )

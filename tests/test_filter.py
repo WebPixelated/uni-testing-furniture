@@ -21,9 +21,11 @@ TOLERANCE = 500  # one slider step
 def test_filter_by_price(catalog, min_p, max_p):
     with allure.step("Open the sofas catalog"):
         catalog.open_catalog()
+        catalog.screenshot("1. Catalog opened")
 
     with allure.step(f"Apply price filter {min_p}–{max_p} ₽"):
         catalog.filter_by_price_range(min_p, max_p)
+        catalog.screenshot("2. Price filter applied")
 
     with allure.step("Read the first product's price from the filtered results"):
         info = catalog.get_first_product_info()

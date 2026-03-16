@@ -18,6 +18,9 @@ class FavoritePage(BasePage):
     CARD_CURRENT_PRICE = "//div[contains(@class, 'product-card__now_price')]/span/b"
     CARD_FAV_BTN = "//div[contains(@class, 'product-card__favorites')]//a"
     CARD_REMOVE_BTN = "//div[contains(@class, 'product-card__favorite-delete')]"
+    EMPTY_FAVORITES = (
+        "//div[contains(normalize-space(text()), 'В избранном пока еще ничего нет')]"
+    )
 
     # --- PUBLIC API ---
     def open_favorites(self):

@@ -13,12 +13,14 @@ SEARCH_QUERY = "Диван Бостон"
 def test_search_product(main, search_results):
     with allure.step("Open the main page"):
         main.open_main()
+        main.screenshot("1. Main page before search")
 
     with allure.step(f"Enter search query '{SEARCH_QUERY}' and submit"):
         main.search_for_product(SEARCH_QUERY)
 
     with allure.step("Wait for search results to appear"):
         search_results.wait_for_results()
+        search_results.screenshot("2. Search results page")
 
     with allure.step("Get the name of the first search result"):
         first_name = search_results.get_first_product_name()
@@ -29,6 +31,6 @@ def test_search_product(main, search_results):
         )
 
     with allure.step(f"Verify the first result contains '{SEARCH_QUERY}'"):
-        assert SEARCH_QUERY.lower() in first_name.lower(), (
-            f"Expected first result to contain '{SEARCH_QUERY}', got '{first_name}'"
-        )
+        assert (
+            SEARCH_QUERY.lower() in first_name.lower()
+        ), f"Expected first result to contain '{SEARCH_QUERY}', got '{first_name}'"
