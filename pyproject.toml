@@ -1,7 +1,7 @@
 [project]
 name = "uni-testing-furniture"
 version = "0.1.0"
-description = ""
+description = "UI-testing solution for mebelmart-saratov using Playwright and Allure for reporting."
 authors = [
     {name = "Wild",email = "zoppoz4100@gmail.com"}
 ]
@@ -17,3 +17,10 @@ dependencies = [
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
 build-backend = "poetry.core.masonry.api"
+
+[dependency-groups]
+dev = [
+    "black (>=26.3.1,<27.0.0)",
+    "ruff (>=0.15.6,<0.16.0)",
+    "pytest-xdist (>=3.8.0,<4.0.0)"
+]
