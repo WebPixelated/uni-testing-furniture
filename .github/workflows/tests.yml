@@ -1,0 +1,95 @@
+name: Mebelmart GUI Tests
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+  workflow_dispatch:
+
+jobs:
+  test:
+    name: Run Playwright Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout repository
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Python
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      # Poetry
+      - name: Install Poetry
+        uses: snok/install-poetry@v1
+        with:
+          version: latest
+          virtualenvs-create: true
+          virtualenvs-in-project: true
+
+      # Cache virtualenv
+      - name: Cache Poetry virtualenv
+        uses: actions/cache@v4
+        with:
+          path: .venv
+          key: venv-${{ runner.os }}-${{ hashFiles('poetry.lock') }}
+          restore-keys: |
+            venv-${{ runner.os }}-
+
+      # Install dependencies
+      - name: Install dependencies
+        run: poetry install --no-interaction --no-root
+
+      # Cache Playwright browsers
+      - name: Cache Playwright browsers
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('poetry.lock') }}
+          restore-keys: |
+            playwright-${{ runner.os }}-
+
+      # Install Playwright browsers
+      - name: Install Playwright browsers
+        run: poetry run playwright install chromium
+
+      # Run tests
+      - name: Run tests
+        run: >
+          xvfb-run --auto-servernum
+          poetry run pytest
+          --browser chromium
+          --alluredir=allure-results
+          --clean-alluredir
+          -v
+        continue-on-error: true
+
+      # Install Allure CLI
+      - name: Install Allure
+        if: always()
+        run: |
+          curl -o allure.tgz -L https://github.com/allure-framework/allure2/releases/latest/download/allure-2.tgz
+          tar -zxvf allure.tgz
+          sudo mv allure-*/bin/allure /usr/bin/allure
+
+      # Upload HTML report
+      - name: Upload Allure HTML report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: allure-report-${{ github.run_member }}
+          path: allure-report
+          retention-days: 7
+
+      # Upload raw Allure results
+      - name: Upload raw Allure results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: allure-results-${{ github.run_number }}
+          path: allure-results/
+          retention-days: 7
