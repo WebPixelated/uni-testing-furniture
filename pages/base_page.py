@@ -5,6 +5,10 @@ from utils.logger import logger
 
 class BasePage:
     BASE_URL = "https://mebelmart-saratov.ru"
+    COOKIE_BTN = (
+        "//div[@role='dialog' and contains(@aria-label,'Cookie')]"
+        "//button[contains(normalize-space(text()), 'Принять')]"
+    )
 
     def __init__(self, page: Page):
         self.page = page
@@ -18,6 +22,7 @@ class BasePage:
         with allure.step(f"Open URL: {full_url}"):
             self.page.goto(full_url)
             self.page.wait_for_load_state("domcontentloaded")
+            self._dismiss_cookie_banner()
 
     # Element access
 
@@ -81,3 +86,26 @@ class BasePage:
             name=name,
             attachment_type=allure.attachment_type.PNG,
         )
+
+    def _dismiss_cookie_banner(self):
+        """
+        Close the Cookie / Privacy Policy dialog if it is visible.
+
+        The banner uses role="dialog" with aria-label containing "Cookie".
+        We try to click its accept/close button; if the banner is absent or
+        already dismissed we silently continue — no exception is raised.
+        """
+        try:
+            banner = self.page.locator(self.COOKIE_BTN)
+            if banner.is_visible(timeout=3_000):
+                logger.info("Cookie banner detected — dismissing")
+                # Try clicking any button inside the dialog
+                btn = banner.locator("button").first
+                if btn.is_visible(timeout=1_000):
+                    btn.click()
+                    logger.info("Cookie banner dismissed")
+                    # Brief wait for the overlay to disappear
+                    banner.wait_for(state="hidden", timeout=3_000)
+        except Exception:
+            # Banner not present or already gone — that's fine
+            pass
