@@ -2,8 +2,7 @@ import pytest
 import allure
 from playwright.sync_api import Page
 
-
-# ── Browser configuration ────────────────────────────────────────────────────
+# Browser configuration
 
 
 @pytest.fixture(scope="session")
@@ -26,7 +25,7 @@ def browser_context_args(browser_context_args):
     }
 
 
-# ── Screenshot on failure ─────────────────────────────────────────────────────
+# Screenshot on failure
 
 
 @pytest.hookimpl(wrapper=True)
